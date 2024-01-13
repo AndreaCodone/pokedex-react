@@ -28,6 +28,16 @@ function App() {
     }
   }
 
+  function getStatClass(value) {
+    if (value < 40) {
+      return "is-danger";
+    } else if (value >= 40 && value < 65) {
+      return "is-warning";
+    } else {
+      return "is-success";
+    }
+  }
+
   {
     /* se pokemon è null mostra il seguente blocco (card) - conditional rendering */
   }
@@ -92,9 +102,25 @@ function App() {
               </div>
             </div>
 
+            {/* riga 105 ho usato il template literals chiamato la funzione getstatClass()*/}
+
             <div className="content">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-              nec iaculis mauris.
+              {pokemon.stats.map((item) => {
+                return (
+                  <p key={item.stat.name}>
+                    <span>
+                      {item.stat.name} - {item.base_stat}
+                    </span>
+                    <progress
+                      className={`progress is-small ${getStatClass(
+                        item.base_stat
+                      )}`}
+                      value={item.base_stat}
+                      max="100"
+                    ></progress>
+                  </p>
+                );
+              })}
             </div>
           </div>
         </div>
