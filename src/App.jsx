@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 const API_URL = "https://pokeapi.co/api/v2";
@@ -87,7 +87,7 @@ function Pokemon({ pokemon }) {
           </div>
           <div className="media-content">
             <p className="title is-4">{pokemon.name}</p>
-            <p className="subtitle is-6">@Loremipsum</p>
+            <p className="subtitle is-6">{pokemon.intro}</p>
             <div className="content tags">{getTypes()}</div>
           </div>
         </div>
@@ -112,6 +112,29 @@ function App() {
       if (response.ok) {
         const result = await response.json();
         setPokemon(result);
+      }
+    } catch (error) {
+      console.log("[Error]:", error);
+    }
+  }
+
+  async function searchPokemonIntro(pokemonSpecie) {
+    try {
+      const response = await fetch(
+        `${API_URL}/pokemon-species/${pokemonSpecie}`
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        const findIntro = result.flavor_text_entries.find(
+          (item) => item.language.name === "it"
+        );
+
+        if (findIntro) {
+          setPokemon((currentPokemon) => {
+            return { ...currentPokemon, intro: findIntro.flavor_text };
+          });
+        }
       }
     } catch (error) {
       console.log("[Error]:", error);
@@ -157,6 +180,16 @@ function App() {
       return <h2>Inserisci il nome di un pokemon...</h2>;
     }
   }
+
+  useEffect(() => {
+    if (pokemon !== null) {
+      searchPokemonIntro(pokemon.species.name);
+    }
+  }, [pokemon]);
+
+  useEffect(() => {
+    searchPokemon("bulbasaur");
+  }, []);
 
   return (
     <>
